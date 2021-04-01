@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using my_books.Data.Services;
 using my_books.Data.ViewModels;
+using my_books.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,8 +23,30 @@ namespace my_books.Controllers
         [HttpPost("add-publisher")]
         public IActionResult AddPublisher([FromBody] PublisherVM publisher)
         {
-            _publishersServices.AddPublisher(publisher);
-            return Ok();
+            try
+            {
+                var newPublisher = _publishersServices.AddPublisher(publisher);
+                return Created(nameof(AddPublisher), newPublisher);
+            }
+            catch(PublisherNameException ex)
+            {
+                return BadRequest($"{ex.Message}, Publisher name: {ex.PublisherName}");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("get-publisher-by-id/{id}")]
+        public IActionResult GetPublisherById(int id)
+        {
+            // throw new Exception("This is an exception that will be handled by middleware");
+            var publisher = _publishersServices.GetPublisherById(id);
+            if (publisher != null)
+                return Ok(publisher);
+            else
+                return NotFound();
         }
 
         [HttpGet("get-publisher-books-with-authors/{id}")]
@@ -37,8 +60,15 @@ namespace my_books.Controllers
         [HttpDelete("delete-publisher-by-id/{id}")]
         public IActionResult DeletePublisherById(int id)
         {
-            _publishersServices.DeletePublisherById(id);
-            return Ok();
+            try
+            {
+                _publishersServices.DeletePublisherById(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
