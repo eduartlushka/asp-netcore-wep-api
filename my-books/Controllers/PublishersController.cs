@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using my_books.ActionResults;
+using my_books.Data.Models;
 using my_books.Data.Services;
 using my_books.Data.ViewModels;
 using my_books.Exceptions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace my_books.Controllers
 {
@@ -28,7 +26,7 @@ namespace my_books.Controllers
                 var newPublisher = _publishersServices.AddPublisher(publisher);
                 return Created(nameof(AddPublisher), newPublisher);
             }
-            catch(PublisherNameException ex)
+            catch (PublisherNameException ex)
             {
                 return BadRequest($"{ex.Message}, Publisher name: {ex.PublisherName}");
             }
@@ -44,9 +42,27 @@ namespace my_books.Controllers
             // throw new Exception("This is an exception that will be handled by middleware");
             var publisher = _publishersServices.GetPublisherById(id);
             if (publisher != null)
+            {
                 return Ok(publisher);
+                // return publisher;
+
+                //var _responseObj = new CustomActionResultVM()
+                //{
+                //    Publisher = publisher
+                //};
+
+                //return new CustomActionResult(_responseObj);
+            }
             else
+            {
                 return NotFound();
+                //var _responseObj = new CustomActionResultVM()
+                //{
+                //    Exception = new Exception("This is coming from publishers controller")
+                //};
+
+                //return new CustomActionResult(_responseObj);
+            }
         }
 
         [HttpGet("get-publisher-books-with-authors/{id}")]
