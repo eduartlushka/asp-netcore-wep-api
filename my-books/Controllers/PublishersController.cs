@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using my_books.ActionResults;
 using my_books.Data.Models;
 using my_books.Data.Services;
@@ -13,16 +14,21 @@ namespace my_books.Controllers
     public class PublishersController : ControllerBase
     {
         private PublishersServices _publishersServices;
-        public PublishersController(PublishersServices publishersServices)
+        private readonly ILogger<PublishersController> _logger;
+        public PublishersController(PublishersServices publishersServices, ILogger<PublishersController> logger)
         {
             _publishersServices = publishersServices;
+            _logger = logger;
         }
 
         [HttpGet("get-all-publishers")]
         public IActionResult GetAllPublishers(string sortBy, string searchString, int pageNumber)
         {
+            // throw new Exception("This is an exeption throw from get all publishers");
             try
             {
+                _logger.LogInformation("This is just a log in GetAllPublishers()");
+
                 var _result = _publishersServices.GetAllPublishers(sortBy, searchString, pageNumber);
 
                 return Ok(_result);

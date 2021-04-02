@@ -25,11 +25,14 @@ namespace my_books.Data
                 .HasOne(a => a.Author)
                 .WithMany(ba => ba.Book_Authors)
                 .HasForeignKey(bi => bi.AuthorId);
+
+            modelBuilder.Entity<Log>().HasKey(x => x.Id);
         }
 
         public DbSet<Book> Books { get; set; }
         public DbSet<Publisher> Publishers { get; set; }
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book_Author> Books_Authors { get; set; }
+        public DbSet<Log> Logs { get; set; }
     }
 }
