@@ -1,4 +1,5 @@
 ﻿using my_books.Data.Models;
+using my_books.Data.Paging;
 using my_books.Data.ViewModels;
 using my_books.Exceptions;
 using System;
@@ -15,6 +16,34 @@ namespace my_books.Data.Services
         public PublishersServices(AppDbContext context)
         {
             _context = context;
+        }
+
+        public List<Publisher> GetAllPublishers(string sortBy, string searchString, int? pageNumber)
+        {
+            var allPublishers = _context.Publishers.OrderBy(x => x.Name).ToList();
+
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                switch (sortBy)
+                {
+                    case "name_desc":
+                        allPublishers = allPublishers.OrderByDescending(x => x.Name).ToList();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                allPublishers = allPublishers.Where(x => x.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)).ToList();
+            }
+
+            // Paging
+            int pageSize = 2;
+            allPublishers = PaginatedList<Publisher>.Create(allPublishers.AsQueryable(), pageNumber ?? 1, pageSize);
+
+            return allPublishers;
         }
 
         public Publisher AddPublisher(PublisherVM publisher)
@@ -53,7 +82,7 @@ namespace my_books.Data.Services
         public void DeletePublisherById(int id)
         {
             var _publisher = _context.Publishers.FirstOrDefault(x => x.Id == id);
-            if(_publisher != null)
+            if (_publisher != null)
             {
                 _context.Publishers.Remove(_publisher);
                 _context.SaveChanges();
