@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using my_books.ActionResults;
-using my_books.Data.Models;
 using my_books.Data.Services;
 using my_books.Data.ViewModels;
 using my_books.Exceptions;
